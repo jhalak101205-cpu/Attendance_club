@@ -5,9 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Attendance History | Attendify</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/studentSchedule.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
+        /* Specific History Styles */
         .history-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -105,27 +106,21 @@
             background: var(--danger);
         }
 
-        .card-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 8px;
-        }
-
         .percentage-badge {
-            font-size: 14px;
+            font-size: 11px;
             font-weight: 800;
             padding: 4px 10px;
-            border-radius: 999px;
+            border-radius: 99px;
+            text-transform: uppercase;
         }
 
         .badge-high {
-            background: #d1fae5;
+            background: #dcfce7;
             color: var(--success);
         }
 
         .badge-mid {
-            background: #fef3c7;
+            background: #fef9c3;
             color: var(--warning);
         }
 
@@ -134,8 +129,58 @@
             color: var(--danger);
         }
 
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .donut {
+            --percent: 0;
+            --size: 120px;
+            --thickness: 10px;
+            --color: var(--primary);
+            --bg-donut: #f1f5f9;
+            width: var(--size);
+            height: var(--size);
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: radial-gradient(closest-side, transparent 100%, white 0),
+                conic-gradient(var(--color) calc(var(--percent) * 1%), var(--bg-donut) 0);
+            position: relative;
+            font-weight: 800;
+            font-size: 22px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .donut::before {
+            content: "";
+            position: absolute;
+            width: calc(var(--size) - var(--thickness) * 2);
+            height: calc(var(--size) - var(--thickness) * 2);
+            background: var(--surface);
+            border-radius: 50%;
+        }
+
+        .donut span {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .donut small {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-top: -4px;
+        }
+
         .overall-summary {
             background: linear-gradient(135deg, var(--primary), #6366f1);
+            background-color: #6366f1;
             color: #fff;
             border-radius: var(--radius-xl);
             padding: 32px;
@@ -145,6 +190,7 @@
             gap: 40px;
             align-items: center;
             box-shadow: var(--shadow-lg);
+            width: 100%;
         }
 
         .overall-donut-wrap {
@@ -168,21 +214,6 @@
         .overall-stat-box strong {
             font-size: 32px;
             font-weight: 800;
-        }
-
-        .no-data {
-            text-align: center;
-            padding: 64px 0;
-            color: var(--text-muted);
-        }
-
-        .student-shell {
-            grid-template-columns: 280px 1fr;
-        }
-
-        .student-main {
-            max-width: none;
-            width: 100%;
         }
 
         .timeline-section {
@@ -293,6 +324,12 @@
             background: var(--primary-dark);
         }
 
+        .no-data {
+            text-align: center;
+            padding: 64px 0;
+            color: var(--text-muted);
+        }
+
         .no-data i {
             font-size: 48px;
             margin-bottom: 16px;
@@ -319,88 +356,99 @@
 
 <body>
 
-    <div class="student-shell">
+    <% const firstName=student.fullName.split(" ")[0]; %>
 
-        <!-- LEFT SIDEBAR -->
-        <aside class="student-menu">
-            <div class="student-greeting">
-                <div class="wave">
+    <div class=" schedule-layout">
+
+        <aside class="schedule-sidebar">
+            <div class="student-welcome">
+                <div class="welcome-icon">
                     <i class="fa-solid fa-hand"></i>
                 </div>
-                <h2>History</h2>
+                <h2>Hi <%= firstName %>!</h2>
             </div>
 
-            <nav class="student-nav">
-                <a href="/student/dashboard" class="nav-item">
+            <nav class="sidebar-menu">
+                <a href="/student/dashboard" class="menu-item">
                     <i class="fa-solid fa-house"></i>
-                    Home
+                    <span>Home</span>
                 </a>
 
-                <a href="/student/schedule" class="nav-item">
+                <a href="/student/schedule" class="menu-item">
                     <i class="fa-solid fa-calendar-days"></i>
-                    Schedule
+                    <span>Schedule</span>
                 </a>
 
-                <a class="nav-item">
+                <a href="#" class="menu-item">
                     <i class="fa-solid fa-users"></i>
-                    Community
+                    <span>Community</span>
                 </a>
 
-                <a href="/student/attendance-history" class="nav-item active">
+                <a href="/student/attendance-history" class="menu-item active">
                     <i class="fa-solid fa-chart-simple"></i>
-                    My Attendance
+                    <span>My Attendance</span>
                 </a>
 
-                <a class="nav-item">
+                <a href="#" class="menu-item">
+                    <i class="fa-solid fa-credit-card"></i>
+                    <span>Fee Payment</span>
+                    <b></b>
+                </a>
+
+                <a href="#" class="menu-item">
                     <i class="fa-solid fa-book-open"></i>
-                    My Courses
+                    <span>My Courses</span>
                 </a>
             </nav>
 
-            <div class="student-nav gap-top">
-                <form action="/logout" method="POST">
-                    <button class="nav-item logout-item" type="submit"
-                        style="width: 100%; text-align: left; background: none; border: none; cursor: pointer;">
-                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                        Log Out
-                    </button>
-                </form>
+            <div class="academy-link">
+                <a href="#" class="menu-item">
+                    <i class="fa-solid fa-circle-play"></i>
+                    <span>Mirai Academy</span>
+                </a>
             </div>
+
+            <p class="settings-title">Settings</p>
+
+            <form action="/logout" method="POST">
+                <button class="menu-item logout-btn" type="submit">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span>Log Out</span>
+                </button>
+            </form>
         </aside>
 
-        <!-- MAIN CONTENT -->
-        <main class="student-main">
-            <header class="student-topbar">
-                <div class="back-title">
-                    <a href="/student/dashboard" class="icon-btn" aria-label="Back"><i
+        <main class="schedule-main">
+
+            <header class="dashboard-header" style="margin-bottom: 32px;">
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <a href="/student/dashboard" class="back-btn"
+                        style="background: var(--surface); border: 1px solid var(--border); width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 12px; color: var(--text);"><i
                             class="fa-solid fa-arrow-left"></i></a>
                     <div>
-                        <span class="page-eyebrow">Analysis</span>
+                        <span class="dashboard-kicker">Analysis</span>
                         <h1>Attendance History</h1>
                     </div>
                 </div>
-                <div class="topbar-actions">
-                    <span class="date-chip"><i class="fa-regular fa-calendar"></i>
-                        <%= today %>
-                    </span>
+
+                <div
+                    style="background: var(--surface); border: 1px solid var(--border); padding: 0 16px; height: 44px; display: flex; align-items: center; border-radius: 12px; font-weight: 700; font-size: 14px; gap: 8px;">
+                    <i class="fa-solid fa-calendar-day" style="color: var(--primary);"></i>
+                    <%= today %>
                 </div>
             </header>
 
-            <section class="overall-summary animate-in" style="width: 100%;">
+            <section class="overall-summary animate-in">
                 <div class="overall-donut-wrap">
                     <div class="donut"
                         style="--percent:<%= stats.overallPercentage %>; --size: 140px; --thickness: 12px; --color: #fff; --bg-donut: rgba(255,255,255,0.2);">
-                        <div style="color: #fff;">
-                            <strong style="font-size: 28px;">
-                                <%= stats.overallPercentage %>%
-                            </strong>
-                            <span
-                                style="font-size: 11px; opacity: 0.8; text-transform: uppercase; font-weight: 700;">Overall</span>
-                        </div>
+                        <span>
+                            <%= stats.overallPercentage %>%
+                                <small>OVERALL</small>
+                        </span>
                     </div>
                 </div>
-
-                <div class="overall-stats-content">
+                <div class="overall-info">
                     <div class="overall-stats-row">
                         <div class="overall-stat-box">
                             <h4>Total Classes</h4>
@@ -421,7 +469,7 @@
                             </strong>
                         </div>
                     </div>
-                    <p style="margin-top: 20px; font-size: 14px; opacity: 0.9;">
+                    <p style="margin-top: 24px; font-size: 15px; opacity: 0.9; line-height: 1.5; font-weight: 500;">
                         Your attendance is calculated based on <%= stats.totalSessions %> sessions conducted for <%=
                                 student.classGroup.name %>.
                     </p>
@@ -501,7 +549,7 @@
                 style="display: flex; justify-content: space-between; align-items: center; margin-top: 40px;">
                 <h2 style="font-size: 22px; font-weight: 800;">Subject-wise Analysis</h2>
                 <div class="filter-chip">
-                    <i class="fa-solid fa-filter"></i> All Subjects
+                    <span>Recent Session</span>
                     <i class="fa-solid fa-angle-down"></i>
                 </div>
             </div>
@@ -568,8 +616,92 @@
 
         </main>
 
-    </div>
+        <aside class="profile-panel">
+            <div class="profile-card">
+                <div class="avatar-circle">
+                    <%= student.fullName.charAt(0).toUpperCase() %>
+                </div>
+
+                <div>
+                    <h3>
+                        <%= student.fullName %>
+                    </h3>
+                    <a href="#">Open Profile</a>
+                </div>
+            </div>
+
+            <div class="side-card">
+                <div class="side-card-icon blue">
+                    <i class="fa-solid fa-users-rectangle"></i>
+                </div>
+                <div>
+                    <h4>Class Group</h4>
+                    <% if (student.classGroup && student.classGroup.name) { %>
+                        <p>
+                            <%= student.classGroup.name %>
+                        </p>
+                        <% } else { %>
+                            <p>N/A</p>
+                            <% } %>
+                </div>
+            </div>
+
+            <div class="side-card">
+                <div class="side-card-icon purple">
+                    <i class="fa-solid fa-book-open"></i>
+                </div>
+                <div>
+                    <h4>Subjects</h4>
+                    <% if (student.subjects) { %>
+                        <p>
+                            <%= student.subjects.length %> Subjects
+                        </p>
+                        <% } else { %>
+                            <p>0 Subjects</p>
+                            <% } %>
+                </div>
+            </div>
+
+            <div class="side-card">
+                <div class="side-card-icon green">
+                    <i class="fa-solid fa-broadcast-tower"></i>
+                </div>
+                <div>
+                    <h4>Live Sessions</h4>
+                    <p>
+                        <%= activeSessions.length %> Active
+                    </p>
+                </div>
+            </div>
+
+            <div class="side-card">
+                <div class="side-card-icon green">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <div>
+                    <h4>Present Today</h4>
+                    <p>
+                        <%= presentCount %> Classes
+                    </p>
+                </div>
+            </div>
+
+            <div class="side-card">
+                <div class="side-card-icon purple">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                </div>
+                <div>
+                    <h4>Absent Today</h4>
+                    <p>
+                        <%= absentCount %> Classes
+                    </p>
+                </div>
+            </div>
+        </aside>
+
+        </div>
 
 </body>
+<script src="/js/studentLocation.js"></script>
 
 </html>
